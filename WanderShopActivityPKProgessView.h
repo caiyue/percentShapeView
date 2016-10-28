@@ -9,4 +9,5 @@
 
 @interface WanderShopActivityPKProgessView : UIView
 @property   (nonatomic,assign)  CGFloat progress;
+@property   (nonatomic,assign)  CGFloat animationTime;
 @end

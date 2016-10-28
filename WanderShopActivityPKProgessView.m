@@ -9,45 +9,67 @@
 #import "UIColor+Hex.h"
 
 @interface WanderShopActivityPKProgessView ()
-@property   (nonatomic,strong)  UIView  *progressView;
+@property   (nonatomic,strong)  UIView  *progressViewLeft;
+@property   (nonatomic,strong)  UIView  *progressViewRight;
 @end
 
 @implementation WanderShopActivityPKProgessView
 - (instancetype)initWithFrame:(CGRect)frame{
     if (self = [super initWithFrame:frame]) {
-        
-        self.backgroundColor = [UIColor colorWithHex:@"#0B67E5"];
+        self.backgroundColor = [UIColor whiteColor];
         [self configSubviews];
     }
     return self;
 }
 
 - (void)configSubviews{
-    UIView  *p = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGRectGetHeight(self.frame))];
-    p.backgroundColor = [UIColor colorWithHex:@"E91F63"];
-    [self addSubview:p];
+    UIView  *pLeft = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGRectGetHeight(self.frame))];
+    pLeft.backgroundColor = [UIColor colorWithHex:@"#E91F63"];
+    [self addSubview:pLeft];
+    self.progressViewLeft = pLeft;
+    
+    UIView  *pRight = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.frame), 0, 0, CGRectGetHeight(self.frame))];
+    pRight.backgroundColor = [UIColor colorWithHex:@"#0B67E5"];
+    [self addSubview:pRight];
+    self.progressViewRight = pRight;
     
     UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:self.bounds];
     bgImageView.image = [UIImage imageNamed:@"wanderShopActivityPKProgressBackgroundImage"];
     [self addSubview:bgImageView];
-    self.progressView = p;
 }
 
 - (void)setProgress:(CGFloat)progress{
+    [self setProgress:progress startFromEdge:YES];
+}
+
+- (void)setProgress:(CGFloat)progress startFromEdge:(BOOL)yon{
     if (_progress != progress) {
+        if (progress > 1) {//重置为1
+            progress = 1;
+        }
         _progress = progress;
-        
-        [UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionTransitionFlipFromLeft animations:^{
-            
-            self.progressView.frame = CGRectMake(0, 0, progress * CGRectGetWidth(self.frame), CGRectGetHeight(self.frame));
+        if (yon) {
+            [self reset];
+        }
+        if (_animationTime <= 0) {
+            _animationTime = 0.5;
+        }
+        [UIView animateWithDuration:_animationTime delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            self.progressViewLeft.frame = CGRectMake(0, 0, progress * CGRectGetWidth(self.frame), CGRectGetHeight(self.frame));
         } completion:^(BOOL finished) {
-            
         }];
         
-        //
-        
-        
+        [UIView animateWithDuration:_animationTime delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            self.progressViewRight.frame = CGRectMake(progress*CGRectGetWidth(self.frame), 0, (1-progress) * CGRectGetWidth(self.frame), CGRectGetHeight(self.frame));
+        } completion:^(BOOL finished) {
+        }];
     }
+}
+
+//reset
+- (void)reset{
+    self.progressViewLeft.frame = CGRectMake(0, 0, 0, CGRectGetHeight(self.frame));
+    self.progressViewRight.frame = CGRectMake(CGRectGetWidth(self.frame), 0, 0, CGRectGetHeight(self.frame));
 }
 
 
